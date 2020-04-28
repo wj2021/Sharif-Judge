@@ -568,7 +568,12 @@ class CI_Upload {
 				return FALSE;
 			}
 		}
+
+		/*
+		 * Try to change the encoding to utf-8
+		 */
 		$this->file_str_to_utf8($this->upload_path.$this->file_name);
+
 		/*
 		 * Set the finalized image dimensions
 		 * This sets the image width/height (assuming the
