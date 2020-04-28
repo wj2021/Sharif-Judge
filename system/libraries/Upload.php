@@ -362,6 +362,28 @@ class CI_Upload {
 	// --------------------------------------------------------------------
 
 	/**
+	 * all to utf8 helper (Kael Chan at 20200428)
+	 * @param string $filename aim filename
+	 * @return bool whether change it
+	 */
+	private function file_str_to_utf8($filename = '')
+	{
+		if ($filename === '' || file_exists($filename) === false || filesize($filename) === 0)
+			return false;
+		$fop = fopen($filename, "r");
+		$words = fread($fop, filesize($filename));
+		fclose($fop);
+		$current_encode = mb_detect_encoding($words, array("ASCII", "GB18030", "GB2312", "GBK", 'BIG5', 'UTF-8'));
+		$result_words = mb_convert_encoding($words, 'UTF-8', $current_encode);
+		if ($result_words === false)
+			return false;
+		$fop = fopen($filename, "w");
+		fwrite($fop, $result_words);
+		fclose($fop);
+		return true;
+	}
+
+	/**
 	 * Perform the file upload
 	 *
 	 * @param	string	$field
@@ -546,7 +568,7 @@ class CI_Upload {
 				return FALSE;
 			}
 		}
-
+		$this->file_str_to_utf8($this->upload_path.$this->file_name);
 		/*
 		 * Set the finalized image dimensions
 		 * This sets the image width/height (assuming the
