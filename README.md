@@ -1,3 +1,8 @@
+# Fork 说明
+原版已不再更新，再此fork并修复了部分bug：
+- mysql的TEXT类型初始化问题
+- 对上传文件进行utf-8编码转换，避免后续问题（例如moss无法使用、代码无法查看等问题）
+
 # Sharif Judge
 
 [Sharif Judge](https://github.com/mjnaderi/Sharif-Judge) is a free and open source online judge for C, C++, Java and
