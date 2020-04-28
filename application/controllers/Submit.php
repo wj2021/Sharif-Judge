@@ -231,7 +231,7 @@ class Submit extends CI_Controller
 			$this->load->model('submit_model');
 
 			$new_submit_id=$this->assignment_model->increase_total_submits($this->user->selected_assignment['id']);
-			$real_filename=$this->file_name.'-'.$new_submit_id.$this->filetype;
+			$real_filename=$user_dir.'/'.$this->file_name.'-'.$new_submit_id.$this->filetype;
 			$this->file_str_to_utf8($real_filename);
 			
 			$submit_info = array(
