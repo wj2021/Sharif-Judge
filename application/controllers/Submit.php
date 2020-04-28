@@ -152,6 +152,29 @@ class Submit extends CI_Controller
 
 
 	/**
+	 * all to utf8 helper (Kael Chan at 20200428)
+	 * @param string $filename aim filename
+	 * @return bool whether change it
+	 */
+	private function file_str_to_utf8($filename = '')
+	{
+		if ($filename === '' || file_exists($filename) === false || filesize($filename) === 0)
+			return false;
+		$fop = fopen($filename, "r");
+		$words = fread($fop, filesize($filename));
+		fclose($fop);
+		$current_encode = mb_detect_encoding($words, array("ASCII", "GB18030", "GB2312", "GBK", 'BIG5', 'UTF-8'));
+		$result_words = mb_convert_encoding($words, 'UTF-8', $current_encode);
+		if ($result_words === false)
+			return false;
+		$fop = fopen($filename, "w");
+		fwrite($fop, $result_words);
+		fclose($fop);
+		return true;
+	}
+
+
+	/**
 	 * Saves submitted code and adds it to queue for judging
 	 */
 	private function _upload()
@@ -207,8 +230,12 @@ class Submit extends CI_Controller
 			$result = $this->upload->data();
 			$this->load->model('submit_model');
 
+			$new_submit_id=$this->assignment_model->increase_total_submits($this->user->selected_assignment['id']);
+			$real_filename=$this->file_name.'-'.$new_submit_id.$this->filetype;
+			$this->file_str_to_utf8($real_filename);
+			
 			$submit_info = array(
-				'submit_id' => $this->assignment_model->increase_total_submits($this->user->selected_assignment['id']),
+				'submit_id' => $new_submit_id,
 				'username' => $this->user->username,
 				'assignment' => $this->user->selected_assignment['id'],
 				'problem' => $this->problem['id'],
