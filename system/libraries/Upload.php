@@ -377,6 +377,7 @@ class CI_Upload {
 		$result_words = mb_convert_encoding($words, 'UTF-8', $current_encode);
 		if ($result_words === false)
 			return false;
+		$result_words = ltrim($result_words,"\XEF\XBB\XBF");
 		$fop = fopen($filename, "w");
 		fwrite($fop, $result_words);
 		fclose($fop);
