@@ -69,6 +69,18 @@
 			</li>
 		</ul>
 	</div>
+	{%  if user.level < 2 %}
+	<div class="top_object shj_menu top_left">
+		<a href="http://114.212.86.242:10003/" target="_blank">RaiseHand</a>
+	</div>
+	{% endif %}
+	<!--echo $_SERVER['HTTP_HOST']-->
+	<!-- echo $_SERVER["SERVER_PORT"]-->
+	{%  if user.level >= 2 %}
+	<div class="top_object shj_menu top_left">
+		<a href="http://114.212.86.242:10003/__admin__" target="_blank">RaiseHand</a>
+	</div>
+	{% endif %}
 	<div class="top_object top_left shj-spinner" style="display: none;">
 		<i class="fa fa-refresh fa-spin fa-lg"></i>
 	</div>
