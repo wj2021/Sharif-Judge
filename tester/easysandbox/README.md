@@ -51,10 +51,12 @@ point (rather than the normal Linux/glibc one), it could execute untrusted code.
 In my intended application (compiling and executing student code
 submissions), I control the compilation process, 
 and I _believe_ that as long as gcc/g++ is invoked without the `-nostdlib` option,
-any attempt by the untusted code to define an entry point (`_start` function)
+any attempt by the untrusted code to define an entry point (`_start` function)
 will result in a linker error,
 because the name `_start` will conflict with the real `_start` function defined in
 `crt1.o`.
+
+**Important**: A program that calls `dlopen` might be able to bypass EasySandbox's `__libc_start_main`: see [this issue](https://github.com/daveho/EasySandbox/issues/3).  Make sure that untrusted code is *not* linked with `-ldl`.
 
 # Limitations
 
