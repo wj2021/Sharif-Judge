@@ -4,10 +4,19 @@
 - 对上传文件进行utf-8编码转换，避免后续问题（例如moss无法使用、代码无法查看等问题）
 - 对上传代码文件做删除BOM的预处理，避免编译问题
 
+功能完善：
+- 新增本地latex数学公式的渲染（内网可渲染）（在assert/js目录下添加MathJax3.1.2目录以实现本地渲染）
+  在problem编辑页面开头引用以下代码以实现本地数学公式渲染
+    ```javascript
+    <script>MathJax = {tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}};</script>
+    <script id="MathJax-script" async src="/assets/js/MathJax3.1.2/tex-mml-chtml.js"></script>
+    ```
+- 更新Easysandbox(下载新的easysandbox文件覆盖tester/easysandbox)
+- 修复topbar、assignments、all submissions页面font-awesome图标显示问题（CSS .class选择器少空格）
+- 在top_bar上添加[RaiseHand](https://github.com/wj2021/RaiseHand)项目的链接（修改application/views/templates/top_bar.twig文件）
 # Sharif Judge
 
-[Sharif Judge](https://github.com/mjnaderi/Sharif-Judge) is a free and open source online judge for C, C++, Java and
-Python programming courses.
+[Sharif Judge](https://github.com/mjnaderi/Sharif-Judge) is a free and open source online judge for C, C++, Java and Python programming courses.
 
 The web interface is written in PHP (CodeIgniter framework) and the main backend is written in BASH.
 
@@ -38,7 +47,8 @@ Download the latest release from https://github.com/mjnaderi/Sharif-Judge/releas
 
 For running Sharif Judge, a Linux server with following requirements is needed:
 
-  * Webserver running PHP version 5.3 or later with `mysqli` extension
+  * apache2 webserver
+  * Webserver running PHP version 5.3 or later with `mysqli`, `mbstring` extension
   * PHP CLI (PHP command line interface, i.e. `php` shell command)
   * MySql or PostgreSql database
   * PHP must have permission to run shell commands using [`shell_exec()`](http://www.php.net/manual/en/function.shell-exec.php) php function (specially `shell_exec("php");`)
