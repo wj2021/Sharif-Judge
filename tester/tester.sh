@@ -304,43 +304,67 @@ if [ "$EXT" = "c" ] || [ "$EXT" = "cpp" ]; then
 			SANDBOX_ON=false
 		fi
 	fi
+
+	# 检查是否使用了shield定义的违规符号
+	SHIELD_PASS=true
+	SHIELD_ERROR_MSG=""
 	if $C_SHIELD_ON; then
-		shj_log "Enabling Shield For C/C++"
-		# if code contains any 'undef', raise compile error:
-		if tr -d ' \t\n\r\f' < code.c | grep -q '#undef'; then
-			echo 'code.c:#undef is not allowed' >cerr
-			EXITCODE=110
+		cp ../shield/def$EXT.h def.h
+		# 符号可能被用作变量，将所有的变量改名为_VARIABLE_
+		sed ':a;N;$!ba;s/\r/ /g' code.c | sed ':a;N;$!ba;s/\n/ /g' | sed -r "s/\s+/ /g" | sed -r "s/[_[:alnum:]]+\s*[,;=\[><\)\.\+\*\/%\!-]/_VARIABLE_ /g" | sed -r "s/\#\s*define\s+[_[:alnum:]]+/_VARIABLE_/g" > tmp_code
+		while read line; do
+			NOT_ALLOW_SYMBOL="`echo $line | cut -d" " -f2`"
+			if [ "`echo $line|cut -d" " -f1`" = "#define" ]; then
+				# 从替换了变量后的源代码中用正则搜索是否使用了违规符号
+				if grep -wq $NOT_ALLOW_SYMBOL tmp_code; then
+					SHIELD_ERROR_MSG="`echo $line|cut -d"/" -f3`"
+					echo Error Messages:$SHIELD_ERROR_MSG >cerr
+					SHIELD_PASS=false
+					EXITCODE=99
+					break
+				fi
+			fi
+		done <def.h
+	fi
+
+	# 编译代码，只有当没有违规符号时才进行编译操作
+	if $SHIELD_PASS; then
+		if $C_SHIELD_ON; then
+			shj_log "Enabling Shield For C/C++"
+			# if code contains any 'undef', raise compile error:
+			if tr -d ' \t\n\r\f' < code.c | grep -q '#undef'; then
+				echo 'code.c:#undef is not allowed' >cerr
+				EXITCODE=110
+			else
+				cp ../shield/shield.$EXT shield.$EXT
+				cp ../shield/def$EXT.h def.h
+				# adding define to beginning of code:
+				echo '#define main themainmainfunction' | cat - code.c > thetemp && mv thetemp code.c
+				$COMPILER shield.$EXT $C_OPTIONS $C_WARNING_OPTION -o $EXEFILE >/dev/null 2>cerr
+				EXITCODE=$?
+			fi
 		else
-			cp ../shield/shield.$EXT shield.$EXT
-			cp ../shield/def$EXT.h def.h
-			# adding define to beginning of code:
-			echo '#define main themainmainfunction' | cat - code.c > thetemp && mv thetemp code.c
-			$COMPILER shield.$EXT $C_OPTIONS $C_WARNING_OPTION -o $EXEFILE >/dev/null 2>cerr
+			mv code.c code.$EXT
+			$COMPILER code.$EXT $C_OPTIONS $C_WARNING_OPTION -o $EXEFILE >/dev/null 2>cerr
 			EXITCODE=$?
 		fi
-	else
-		mv code.c code.$EXT
-		$COMPILER code.$EXT $C_OPTIONS $C_WARNING_OPTION -o $EXEFILE >/dev/null 2>cerr
-		EXITCODE=$?
 	fi
 	COMPILE_END_TIME=$(($(date +%s%N)/1000000));
 	shj_log "Compiled. Exit Code=$EXITCODE  Execution Time: $((COMPILE_END_TIME-COMPILE_BEGIN_TIME)) ms"
+	
+	# $EXITCODE不等于0表示编译有错误
 	if [ $EXITCODE -ne 0 ]; then
 		shj_log "Compile Error"
 		shj_log "$(cat cerr | head -10)"
-		echo '<span class="shj_b">Compile Error<br>Error Messages: (line numbers are not correct)</span>' >$PROBLEMPATH/$UN/result.html
+		echo '<span class="shj_b">Compile Error</span>' >$PROBLEMPATH/$UN/result.html
 		echo '<span class="shj_r">' >> $PROBLEMPATH/$UN/result.html
 		SHIELD_ACT=false
 		if $C_SHIELD_ON; then
-			while read line; do
-				if [ "`echo $line|cut -d" " -f1`" = "#define" ]; then
-					if grep -wq $(echo $line|cut -d" " -f3) cerr; then
-						echo `echo $line|cut -d"/" -f3` >> $PROBLEMPATH/$UN/result.html
-						SHIELD_ACT=true
-						break
-					fi
-				fi
-			done <def.h
+			# 输出shield错误信息
+			if ! $SHIELD_PASS; then
+				echo Error Messages:$SHIELD_ERROR_MSG >>$PROBLEMPATH/$UN/result.html
+				SHIELD_ACT=true
+			fi
 		fi
 		if ! $SHIELD_ACT; then
 			echo -e "\n" >> cerr
