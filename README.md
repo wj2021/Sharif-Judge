@@ -14,7 +14,7 @@
 - 更新Easysandbox(下载新的easysandbox文件覆盖tester/easysandbox)
 - 修复topbar、assignments、all submissions页面font-awesome图标显示问题（CSS .class选择器少空格）
 - 在top_bar上添加[RaiseHand](https://github.com/wj2021/RaiseHand)项目的链接（修改application/views/templates/top_bar.twig文件）
-- 修复C++定义的shield无法使用的问题，通过在编译之前检查源码实现（修改tester/tester.sh和tester/shield文件夹下的部分文件）
+- 修复C++定义的shield无法使用的问题，~~通过在编译之前检查源码实现~~通过重整代码顺序实现（修改tester/tester.sh和tester/shield文件夹下的部分文件）
 
 # Sharif Judge
 

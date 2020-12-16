@@ -21,7 +21,7 @@ e.g. If you want to disallow goto, add this line:
 #define fork errorNo10       //Fork is not allowed
 #define clone errorNo11      //Clone is not allowed
 #define sleep errorNo12      //Sleep is not allowed
-#define goto errorNo13       //Goto is not allowed (Surprise!)
+#define goto errorNo13       //Goto is not allowed (Surprise)
 #define strcpy errorNo14     //strcpy is not allowed
 #define strncpy errorNo15    //strncpy is not allowed
 #define strcat errorNo816    //strcat is not allowed

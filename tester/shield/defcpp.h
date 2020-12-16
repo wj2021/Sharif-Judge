@@ -14,7 +14,7 @@ e.g. If you want to disallow goto, add this line:
 #define fork errorNo1        //Fork is not allowed
 #define clone errorNo2       //Clone is not allowed
 #define sleep errorNo3       //Sleep is not allowed
-#define goto errorNo4        //Goto is not allowed (Surprise!)
+#define goto errorNo4        //Goto is not allowed (Surprise)
 #define string errorNo5      //String(STL) is not allowed
 #define vector errorNo6      //Vector(STL) is not allowed
 #define list errorNo7        //List(STL) is not allowed
