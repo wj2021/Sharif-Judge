@@ -1,10 +1,8 @@
 # Fork 说明
-原版已不再更新，在此fork并修复了部分bug：
+原版已不再更新，在此fork并修复完善部分功能：
 - mysql的TEXT类型初始化问题
 - 对上传文件进行utf-8编码转换，避免后续问题（例如moss无法使用、代码无法查看等问题）
 - 对上传代码文件做删除BOM的预处理，避免编译问题
-
-功能完善：
 - 新增本地latex数学公式的渲染（内网可渲染）（在assert/js目录下添加MathJax3.1.2目录以实现本地渲染）
   在problem编辑页面开头引用以下代码以实现本地数学公式渲染
     ```javascript
@@ -15,6 +13,7 @@
 - 修复topbar、assignments、all submissions页面font-awesome图标显示问题（CSS .class选择器少空格）
 - 在top_bar上添加[RaiseHand](https://github.com/wj2021/RaiseHand)项目的链接（修改application/views/templates/top_bar.twig文件）
 - 修复C++定义的shield无法使用的问题，~~通过在编译之前检查源码实现~~通过重整代码顺序实现（修改tester/tester.sh和tester/shield文件夹下的部分文件）
+- 修复使用markdown编辑公式无法正常显示的问题，修改Parsedown.php库取消将下划线(_)解析成em标签
 
 # Sharif Judge
 
